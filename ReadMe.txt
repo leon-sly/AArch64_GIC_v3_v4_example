@@ -1,9 +1,22 @@
 AArch64 Generic Interrupt Controller (v3/v4) Example
 ====================================================
 
+中文说明
+========
+这是仓库的总说明文档。
+你可以把这个工程理解成一组 AArch64 裸机 GIC 实验，每个 image_xxx 都是一个独立示例。
+
 Introduction
 ============
 This example demonstrates the use of the Generic Interrupt Controller (GIC) in a baremetal environment.
+
+中文说明
+========
+这个仓库重点演示的是：
+- GIC 的基础初始化
+- PPI / SPI / LPI 的配置与处理中断流程
+- GICv3.1 的扩展中断范围
+- GICv4.1 的虚拟中断能力
 
 
 Notice
@@ -32,6 +45,14 @@ Requirements
   
   FVP_Base_AEMvA-AEMvA - Download as part of the Fixed Virtual Platform library from 
       https://developer.arm.com/Tools%20and%20Software/Fixed%20Virtual%20Platforms
+
+中文说明
+========
+运行这个工程通常需要：
+- Arm Development Studio 或兼容的 Arm Compiler 工具链
+- Arm FVP 模型
+
+如果你现在只是学代码，可以先不着急搭完整环境。
 
 
 File list
@@ -65,6 +86,15 @@ File list
   |-> ReadMe.txt             This file
   |-> scatter.txt            Memory layout for linker
 
+中文说明
+========
+目录可以这样看：
+- headers/：头文件和寄存器定义
+- src/：核心源码、启动代码、示例入口
+- Makefile：命令行构建脚本
+- scatter.txt / scatter_virt.txt：链接脚本
+- *.launch：Arm DS 调试配置
+
 
 Description
 ===========
@@ -93,6 +123,16 @@ This example shows the setup and use of GICv4.1 virtual LPIs.
 image_vsgi
 This example shows the setup and use of GICv4.1 virtual SGIs.
 
+中文说明
+========
+建议你按这个顺序看：
+1. image_basic：先理解最基本的中断链路
+2. image_lpi：再理解 ITS 和物理 LPI
+3. image_gicv31：看扩展 PPI / SPI
+4. image_vlpi / image_vsgi：最后再看 GICv4.1 虚拟化
+
+如果你只想先学“外设中断怎么进来”，优先看 image_basic。
+
 
 
 Building the example from the command line
@@ -114,6 +154,15 @@ Optionally, adding "DEBUG=TRUE" results in additional logging messages being pri
 
 Note:
 When a GIC implements GICv3.x, the Redistributors occupy 128K of address space.  When GICv4.x is implemented, they occupy 256K.  The example requires the Redistributor size at build time, which is why the GIC version is passed as an argument to make.
+
+中文说明
+========
+命令行构建最关键的是这三种：
+- `make`
+- `make GIC=GICV4`
+- `make GIC=GICV4 gicv4`
+
+之所以要区分 GIC 版本，是因为 GICv3 和 GICv4 的 Redistributor 地址空间大小不同。
 
 
 Explanation of model parameters
@@ -167,6 +216,17 @@ Controls the value of GITS_TYPER.VMOVP, default 0.  GICv4.1 examples require 1.
 Collectively control the ITS's CommonLPIAff behaviour.
 GICv4.1 examples require them both to be set to 2.
 
+中文说明
+========
+这一节解释的是 FVP 模型参数。
+这些参数决定模拟出来的硬件能力，比如：
+- 有没有 ITS
+- 有多少扩展中断
+- 是否支持 GICv4.1
+- ITS 的表类型是什么
+
+如果参数不对，示例代码通常会在运行时检查失败并退出。
+
 
 Running the example on GICv3.0:
 ===============================
@@ -180,6 +240,13 @@ The image_basic and image_lpi examples are compatible with GICv3.0.
 Alternatively, replace all the -C options with
 
   -f <path_to_example_dir>/gicv3_all.params
+
+中文说明
+========
+这里是在说明如何运行 GICv3.0 版本示例。
+实际使用时，一般更推荐直接用参数文件：
+- `-f gicv3_all.params`
+这样比手写一长串 `-C` 参数更省事。
 
 
 Running the example on GICv4.1:
@@ -196,6 +263,11 @@ FVP_Base_AEMvA-AEMvA -C cluster0.NUM_CORES=2 -C cluster1.NUM_CORES=0 -C bp.secur
 Alternatively, replace all the -C options with
 
   -f <path_to_example_dir>/gicv4_all.params
+
+中文说明
+========
+这一节对应 GICv4.1。
+如果你要跑 vLPI / vSGI，相关的 GICv4.1 和 ITS 参数必须匹配，否则示例无法正常工作。
 
 
 Building and running the example using Arm Development Studio (TBD)
@@ -215,3 +287,11 @@ Note: You can build the project from the Arm DS command line instead of using th
 
 To run the project:
 * Once the project has built, right-click on the appropriate *.launch file and "Debug as"
+
+中文说明
+========
+如果你使用 Arm Development Studio 图形界面：
+- 先导入工程
+- 选择合适的 Build Configuration
+- 编译
+- 用对应的 `.launch` 文件启动调试
